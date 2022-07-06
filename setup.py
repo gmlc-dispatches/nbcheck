@@ -10,6 +10,7 @@ setup(
     install_requires=[
         "pytest",
         "nbformat",
+        "nbval",
     ],
     entry_points={
         "pytest11": [

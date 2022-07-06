@@ -1,6 +1,9 @@
 name: nbcheck
 description: Run checks on Jupyter notebooks
 inputs:
+  type:
+    required: true
+    description: Type of check to perform. Options are 'static', 'execution'.
   setup-python:
     required: false
     description: |
@@ -21,10 +24,20 @@ runs:
       working-directory: ${{ github.action_path }}
       run: |
         pip install --progress-bar off .
-        pip show dispatches-nbcheck pytest nbformat
+        pip show dispatches-nbcheck pytest nbformat nbval
+    - name: Add common pytest options
+      shell: bash
+      run: |
+        echo 'PYTEST_ADDOPTS=--color=yes' >> "$GITHUB_ENV"
     - name: Run static tests (i.e. without executing the notebooks)
+      if: inputs.type == 'static'
       shell: bash
       env:
         NBCHECK_TEST_FILE: ${{ github.action_path }}/tests/test_static.py
       run: |
         pytest "$NBCHECK_TEST_FILE"
+    - name: Run tests executing the notebooks
+      if: inputs.type == 'execution'
+      shell: bash
+      run: |
+        pytest --durations=20 --durations-min=1.0 --nbval-lax
