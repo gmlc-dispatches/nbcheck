@@ -57,7 +57,11 @@ class NBCheck:
         return nbformat.read(nb_path, as_version=4)
 
     def pytest_report_teststatus(self, report: TestReport, config: Config):
-        if report.when in self._report_types_to_collect:
+        should_collect = (
+            report.when in self._report_types_to_collect
+            and self._current_nb is not None
+        )
+        if should_collect:
             self._reports_by_nb[self._current_nb].append(report)
 
     def _get_test_outcome_summary(self, report: TestReport) -> str:
@@ -74,6 +78,8 @@ class NBCheck:
         return test_repr
 
     def pytest_terminal_summary(self, terminalreporter: TerminalReporter):
+        if not self._reports_by_nb:
+            return
         tr = terminalreporter
         tr.section("Jupyter notebooks")
         for nb_path, reps in self._reports_by_nb.items():
