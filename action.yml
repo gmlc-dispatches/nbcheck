@@ -14,7 +14,7 @@ runs:
   using: composite
   steps:
     - uses: actions/setup-python@v2
-      if: inputs.setup-python
+      if: fromJSON(inputs.setup-python)
       with:
         python-version: '3.10'
     - name: Install Python package with dependencies
