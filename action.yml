@@ -18,8 +18,9 @@ runs:
       shell: bash
       env:
         SETUPTOOLS_SCM_PRETEND_VERSION: ${{ github.action_ref }}
+      working-directory: ${{ github.action_path }}
       run: |
-        pip install --progress-bar off file://${{ github.action_path}}
+        pip install --progress-bar off .
         pip show dispatches-nbcheck pytest nbformat
     - name: Run static tests (i.e. without executing the notebooks)
       shell: bash
