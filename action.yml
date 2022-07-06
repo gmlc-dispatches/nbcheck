@@ -1,0 +1,28 @@
+name: nbcheck
+description: Run checks on Jupyter notebooks
+inputs:
+  setup-python:
+    required: false
+    description: |
+      Whether the action should set up its own Python environment,
+      or use the one created by the job
+    default: "false"
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-python@v2
+      if: inputs.setup-python
+      shell: bash
+      with:
+        python-version: 3.10
+    - name: Install Python package with dependencies
+      shell: bash
+      run: |
+        pip install --progress-bar off file://${{ github.action_path}}
+        pip show dispatches-nbcheck pytest nbformat
+    - name: Run static tests (i.e. without executing the notebooks)
+      shell: bash
+      env:
+        NBCHECK_TEST_FILE: ${{ github.action_path }}/tests/test_static.py
+      run: |
+        pytest "$NBCHECK_TEST_FILE"
