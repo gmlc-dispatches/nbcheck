@@ -39,6 +39,6 @@ runs:
     - name: Run tests executing the notebooks
       if: inputs.type == 'execution'
       shell: bash
-      working-directory: ${{ github.workflow }}
+      working-directory: ${{ github.workspace }}
       run: |
         find "$PWD" -type f -name "*.ipynb" -exec pytest --durations=20 --durations-min=1.0 --nbval-lax {} +
