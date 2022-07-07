@@ -14,6 +14,7 @@ setup(
         "nbformat",
         "nbval",
     ],
+    packages=find_packages(),
     entry_points={
         "pytest11": [
             "nbcheck = nbcheck.pytest_plugin:plugin"
