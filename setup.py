@@ -5,8 +5,10 @@ setup(
     name="dispatches-nbcheck",
     author="Ludovico Bianchi",
     author_email="lbianchi@lbl.gov",
-    use_scm_version=True,
     setup_requires=["setuptools_scm"],
+    use_scm_version={
+        "version_scheme": "post-release",
+    },
     install_requires=[
         "pytest",
         "nbformat",
