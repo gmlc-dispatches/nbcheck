@@ -18,12 +18,11 @@ runs:
       with:
         python-version: '3.10'
     - name: Install Python package with dependencies
-      shell: bash
       env:
-        SETUPTOOLS_SCM_PRETEND_VERSION: ${{ github.action_ref }}
-      working-directory: ${{ github.action_path }}
+        _pip_install_target: git+https://github.com/${{ github.action_repository }}@${{ github.action_ref }}
+      shell: bash
       run: |
-        pip install --progress-bar off .
+        pip install --progress-bar off "$_pip_install_target"
         pip show dispatches-nbcheck pytest nbformat nbval
     - name: Add common pytest options
       shell: bash
