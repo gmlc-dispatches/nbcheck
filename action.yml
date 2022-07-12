@@ -31,16 +31,16 @@ runs:
     - name: Add common pytest options
       shell: bash
       run: |
-        echo 'PYTEST_ADDOPTS=--color=yes -k "${{ inputs.pytest-keywords }}"' >> "$GITHUB_ENV"
+        echo 'PYTEST_ADDOPTS="--color=yes"' >> "$GITHUB_ENV"
     - name: Run static tests (i.e. without executing the notebooks)
       if: inputs.type == 'static'
       shell: bash
       working-directory: ${{ github.workspace }}
       run: |
-        pytest "${{ github.action_path }}/static/"
+        pytest "${{ github.action_path }}/static/" -k "${{ inputs.pytest-keywords }}"
     - name: Run tests executing the notebooks
       if: inputs.type == 'execution'
       shell: bash
       working-directory: ${{ github.workspace }}
       run: |
-        pytest -c "${{ github.action_path }}/execution/pytest.ini" --rootdir=. .
+        pytest -c "${{ github.action_path }}/execution/pytest.ini" -k "${{ inputs.pytest-keywords }}" --rootdir=. .
