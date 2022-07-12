@@ -10,9 +10,9 @@ inputs:
       Whether the action should set up its own Python environment,
       or use the one created by the job
     default: "false"
-  pytest-extra-flags:
+  pytest-keywords:
     required: false
-    description: Extra flags to pass to the pytest call
+    description: Keywords to pass to the pytest -k argument
     default: ""
 runs:
   using: composite
@@ -31,7 +31,7 @@ runs:
     - name: Add common pytest options
       shell: bash
       run: |
-        echo 'PYTEST_ADDOPTS="--color=yes ${{ inputs.pytest-extra-flags }}"' >> "$GITHUB_ENV"
+        echo 'PYTEST_ADDOPTS=--color=yes -k "${{ inputs.pytest-keywords }}"' >> "$GITHUB_ENV"
     - name: Run static tests (i.e. without executing the notebooks)
       if: inputs.type == 'static'
       shell: bash
