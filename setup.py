@@ -20,8 +20,13 @@ setup(
     packages=find_packages(),
     entry_points={
         "pytest11": [
-            "nbcheck = nbcheck.pytest_plugin:plugin"
-        ]
+            "nbcheck = nbcheck.plugin",
+        ],
+        "nbcheck": [
+            "execution = nbcheck.execution",
+            "headers = nbcheck.headers",
+            "cell_order = nbcheck.cell_order",
+        ],
     },
     classifiers=[
         "Framework :: Pytest",
