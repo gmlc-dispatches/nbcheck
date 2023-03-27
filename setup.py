@@ -10,9 +10,12 @@ setup(
         "version_scheme": "post-release",
     },
     install_requires=[
-        "pytest",
+        "pytest >= 7",
         "nbformat",
-        "nbval",
+        # we use a relatively tight pinning for nbval
+        # since we rely on several non-CLI APIs directly
+        "nbval ~= 0.10",
+        "ipykernel",  # ipykernel.kernelspec
     ],
     packages=find_packages(),
     entry_points={
