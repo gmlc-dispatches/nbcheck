@@ -20,12 +20,12 @@ pip install "git+https://github.com/gmlc-dispatches/nbcheck@abcd123"
 ### Usage
 
 ```sh
-# run nbcheck with all discovered plugins and default options
-pyest --nbcheck
+# run nbcheck with static checks only
+pyest --nbcheck=static
 
-# disable the `execution` nbcheck plugins to avoid executing the notebooks
-pytest --nbcheck -p no:execution
+# run nbcheck with both static and exec checks
+pytest --nbcheck=static --nbcheck=exec
 
-# disable the built-in `python` plugin to only run test items created by nbcheck plugins
-pytest --nbcheck -p no:python
+# disable the built-in `python` plugin to only run test items created by nbcheck
+pytest --nbcheck=static --nbcheck=exec -p no:python
 ```

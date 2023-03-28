@@ -11,9 +11,11 @@ from nbcheck.api import Directory
 
 
 def pytest_addoption(parser: pytest.Parser):
-    parser.addoption(
+    grp = parser.getgroup("nbcheck")
+    grp.addoption(
         "--nbcheck",
-        action="store_true",
+        help="nbcheck checks category to enable. Can be given multiple times, e.g. `--nbcheck=static --nbcheck=exec`",
+        action="append",
         default=None,
         dest="nbcheck",
     )
@@ -26,8 +28,13 @@ def pytest_addhooks(pluginmanager: pytest.PytestPluginManager):
 
 
 def pytest_configure(config: pytest.Config):
-    if config.option.nbcheck:
-        config.pluginmanager.load_setuptools_entrypoints("nbcheck")
+    if config.option.nbcheck is None:
+        return
+    for cat in config.option.nbcheck:
+        entry_point_group_name = f"nbcheck.{cat}"
+        n_loaded = config.pluginmanager.load_setuptools_entrypoints(entry_point_group_name)
+        if not n_loaded:
+            raise ValueError(f"No entry_points plugins could be loaded for {entry_point_group_name!r}")
 
 
 def pytest_ignore_collect(collection_path: Path):

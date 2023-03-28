@@ -22,10 +22,12 @@ setup(
         "pytest11": [
             "nbcheck = nbcheck.plugin",
         ],
-        "nbcheck": [
-            "execution = nbcheck.execution",
+        "nbcheck.static": [
             "headers = nbcheck.headers",
             "cell_order = nbcheck.cell_order",
+        ],
+        "nbcheck.exec": [
+            "execution = nbcheck.execution",
         ],
     },
     classifiers=[
