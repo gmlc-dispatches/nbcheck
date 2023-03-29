@@ -18,6 +18,17 @@ def pytest_addoption(parser: pytest.Parser):
         action="append",
         default=None,
         dest="nbcheck",
+        metavar="<category>",
+    )
+    grp.addoption(
+        "--cell-timeout",
+        help="Maximum time allowed for a cell to complete execution before raising an error, in seconds",
+        action="store",
+        # NOTE technically float, but <1 s doesn't really make sense
+        type=int,
+        default=600,
+        dest="nbcheck_cell_timeout_s",
+        metavar="<timeout in s>"
     )
 
 
