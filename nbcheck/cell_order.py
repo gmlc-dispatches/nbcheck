@@ -25,7 +25,7 @@ class CellIndexCheck(pytest.Item):
         for expected_index, cell in enumerate(code_cells, start=1):
             name = f"[{expected_index}]"
             yield cls.from_parent(
-                parent=parent,
+                parent,
                 name=name,
                 cell=cell,
                 expected=expected_index,
@@ -70,7 +70,7 @@ class CellOrder(pytest.Collector):
         for expected_index, cell in enumerate(self.cells, start=1):
             name = f"[{expected_index}]"
             yield CellIndexCheck.from_parent(
-                parent=self,
+                self,
                 name=name,
                 cell=cell,
                 expected=expected_index,
@@ -80,9 +80,9 @@ class CellOrder(pytest.Collector):
 def pytest_nbcollect_makeitem(collector: Notebook):
     cells = collector.code_cells
     return CellOrder.from_parent(
-        parent=collector,
+        collector,
         cells=cells,
-        name=f"(code) 1-{len(cells)}"
+        name=f"cell_order (1-{len(cells)})"
     )
 
 

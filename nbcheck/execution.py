@@ -64,6 +64,16 @@ def pytest_nbcheck_info(config: pytest.Config) -> List[str]:
 
 
 class CellsExec(nbval_plugin.IPyNbFile):
+    def __init__(self, *, name=None, nodeid=None, parent=None, **kwargs):
+        if nodeid is None and parent is not None and name is not None:
+            # this is to ensure a consistent behavior with the sub-collectors
+            # (i.e. whose parent is a nbcheck.api.Notebook) from the other nbcheck plugins
+            # since they're not subclasses of pytest.FSCollector
+            # It looks like if nodeid is not set explicitly and path == self.parent.path,
+            # the nodeid will be mangled with extra :: to ensure uniqueness
+            nodeid = f"{parent.nodeid}::{name}"
+        super().__init__(name=name, nodeid=nodeid, parent=parent, **kwargs)
+
     def collect(self):
         # overwrite the default 0-based cell_num
         orig_items = super().collect()
@@ -82,8 +92,9 @@ class CellsExec(nbval_plugin.IPyNbFile):
 @pytest.hookimpl(trylast=True)
 def pytest_nbcollect_makeitem(collector: Notebook):
     return CellsExec.from_parent(
-        parent=collector,
+        collector,
         path=collector.path,
+        name="exec (nbval)"
     )
 
 

@@ -21,7 +21,7 @@ class Directory(Node):
         relpath = bestrelpath(session.config.rootpath, path)
 
         return cls.from_parent(
-            parent=session,
+            session,
             name=relpath,
             nodeid=relpath,
         )
@@ -43,7 +43,7 @@ class Notebook(pytest.Collector):
         )
 
         return cls.from_parent(
-            parent=parent,
+            parent,
             name=path.name,
             nb=nb,
             path=path,

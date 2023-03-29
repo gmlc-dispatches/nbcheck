@@ -124,7 +124,7 @@ class HeaderStructure(pytest.Item):
 def pytest_nbcollect_makeitem(collector: Notebook):
     headers = Headers.from_markdown_cells(collector.markdown_cells)
     return HeaderStructure.from_parent(
-        parent=collector,
+        collector,
         name=f"headers ({len(headers)})",
         headers=headers,
     )
