@@ -63,9 +63,25 @@ def pytest_nbcheck_info(config: pytest.Config) -> List[str]:
     return lines
 
 
+class CellsExec(nbval_plugin.IPyNbFile):
+    def collect(self):
+        # overwrite the default 0-based cell_num
+        orig_items = super().collect()
+        for one_based, orig_item in enumerate(orig_items, start=1):
+            zero_based = orig_item.cell_num
+            item = type(orig_item).from_parent(
+                self,
+                name=orig_item.name.replace(str(zero_based), str(one_based)),
+                cell_num=one_based,
+                cell=orig_item.cell,
+                options=orig_item.options,
+            )
+            yield item
+
+
 @pytest.hookimpl(trylast=True)
 def pytest_nbcollect_makeitem(collector: Notebook):
-    return nbval_plugin.IPyNbFile.from_parent(
+    return CellsExec.from_parent(
         parent=collector,
         path=collector.path,
     )
