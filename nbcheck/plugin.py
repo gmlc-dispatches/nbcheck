@@ -1,13 +1,18 @@
+from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable
 from typing import List
 from typing import Tuple
+import warnings
 
 import pytest
 
 from nbcheck.api import Notebook
 from nbcheck.api import Directory
+
+
+ACTIVE_CHECKS = {}
 
 
 def pytest_addoption(parser: pytest.Parser):
@@ -38,14 +43,28 @@ def pytest_addhooks(pluginmanager: pytest.PytestPluginManager):
     pluginmanager.add_hookspecs(hooks)
 
 
+@contextmanager
+def _tracking_newly_loaded_plugins(manager: pytest.PytestPluginManager) -> dict:
+    before = dict(manager.list_name_plugin())
+    added = {}
+    yield added
+    after = dict(manager.list_name_plugin())
+    for name in (after.keys() - before.keys()):
+        added[name] = after[name]
+
+
 def pytest_configure(config: pytest.Config):
     if config.option.nbcheck is None:
         return
-    for cat in config.option.nbcheck:
+    requested_categories = list(config.option.nbcheck)
+    for cat in requested_categories:
         entry_point_group_name = f"nbcheck.{cat}"
-        n_loaded = config.pluginmanager.load_setuptools_entrypoints(entry_point_group_name)
-        if not n_loaded:
-            raise ValueError(f"No entry_points plugins could be loaded for {entry_point_group_name!r}")
+        with _tracking_newly_loaded_plugins(config.pluginmanager) as loaded_now:
+            _ = config.pluginmanager.load_setuptools_entrypoints(entry_point_group_name)
+        ACTIVE_CHECKS.update(loaded_now)
+
+    if requested_categories and not ACTIVE_CHECKS:
+        warnings.warn(f"No checks could be loaded for any of the requested categories: {requested_categories}")
 
 
 def pytest_ignore_collect(collection_path: Path):
